@@ -81,7 +81,8 @@ def main():
         "use_llm": True,
         "gemini_model_name": "gemini-2.5-flash-preview-05-20",
         "llm_service": "marker.services.gemini.GoogleGeminiService",  # 默认值，LLM类
-        "gemini_api_key": os.environ.get("GEMINI_API_KEY") or "YOUR_GEMINI_API_KEY"
+        "gemini_api_key": os.environ.get("GEMINI_API_KEY") or "YOUR_GEMINI_API_KEY",
+        # "disable_image_extraction": True,  # 禁用图片提取，会填充LLM理解内容，默认False
     }
 
     # 初始化配置解析器
