@@ -9,6 +9,7 @@ from docling.datamodel.pipeline_options import (
     ApiVlmOptions,
     ResponseFormat,
     VlmPipelineOptions,
+    AcceleratorOptions,
 )
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling.pipeline.vlm_pipeline import VlmPipeline
@@ -114,7 +115,8 @@ def gemini_vlm_options(model: str, prompt: str, timeout: int = 300):
 def process_single_pdf(pdf_path: Path, output_dir: Path, model_name: str = "gemini-2.5-flash-preview-05-20"):
     logging.info(f"正在处理: {pdf_path.name}")
     pipeline_options = VlmPipelineOptions(
-        enable_remote_services=True
+        enable_remote_services=True,
+        # accelerator_options=AcceleratorOptions(device="cpu", num_threads=8)  # 配置device为cpu，线程数为8
     )
     pipeline_options.vlm_options = gemini_vlm_options(
         model=model_name,

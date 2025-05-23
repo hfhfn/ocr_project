@@ -3,10 +3,9 @@ import os
 import re
 
 from docling.datamodel.base_models import InputFormat
-from docling.document_converter import DocumentConverter, PdfFormatOption
+from docling.document_converter import DocumentConverter, PdfFormatOption, WordFormatOption
 from docling_core.types.doc import ImageRefMode
-from docling.datamodel.pipeline_options import PdfPipelineOptions
-
+from docling.datamodel.pipeline_options import PdfPipelineOptions, AcceleratorOptions
 
 source = "./input"  # document per local path or URL
 output_dir = "./output"  # 修改为你希望保存的路径
@@ -17,13 +16,16 @@ document_path = [os.path.join(source, file) for file in os.listdir(source) if fi
 pipeline_options = PdfPipelineOptions(
     generate_picture_images=True,
     images_scale=2.0,
+    # accelerator_options=AcceleratorOptions(device="cpu", num_threads=8)  # 配置device为cpu，线程数为8
 )
 
+# 默认支持直接传入各种格式 参考：InputFormat类
 converter = DocumentConverter(
     format_options={
         InputFormat.PDF: PdfFormatOption(
             pipeline_options=pipeline_options,
-        )
+        ),
+        # InputFormat.DOCX: WordFormatOption()  # 除PDF外，其他格式参数默认就行，不需要显示配置
     }
 )
 result = converter.convert(document_path)
