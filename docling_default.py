@@ -8,15 +8,15 @@ from docling_core.types.doc import ImageRefMode
 from docling.datamodel.pipeline_options import PdfPipelineOptions, AcceleratorOptions
 
 source = "./input"  # document per local path or URL
-output_dir = "./output"  # 修改为你希望保存的路径
+output_dir = "./output/default"  # 修改为你希望保存的路径
 
-document_path = [os.path.join(source, file) for file in os.listdir(source) if file.endswith(".pdf")][0]
+document_path_list = [os.path.join(source, file) for file in os.listdir(source) if file.endswith(".pdf")]
 # print(document_path)
 
 pipeline_options = PdfPipelineOptions(
     generate_picture_images=True,
     images_scale=2.0,
-    # accelerator_options=AcceleratorOptions(device="cpu", num_threads=8)  # 配置device为cpu，线程数为8
+    accelerator_options=AcceleratorOptions(device="cpu", num_threads=8)  # 配置device为cpu，线程数为8
 )
 
 # 默认支持直接传入各种格式 参考：InputFormat类
@@ -28,9 +28,6 @@ converter = DocumentConverter(
         # InputFormat.DOCX: WordFormatOption()  # 除PDF外，其他格式参数默认就行，不需要显示配置
     }
 )
-result = converter.convert(document_path)
-
-markdown_text = result.document.export_to_markdown(image_mode=ImageRefMode.EMBEDDED)
 
 def save_images_and_update_markdown(markdown_text, output_dir):
     # 创建图片保存目录
@@ -67,15 +64,29 @@ def save_images_and_update_markdown(markdown_text, output_dir):
 
     return markdown_text
 
-output_basename = os.path.splitext(os.path.basename(document_path))[0]
-output_subdir = os.path.join(output_dir, output_basename)
-output_path = os.path.join(output_subdir, output_basename + ".md")
+def process_single_pdf(converter, document_path, output_dir):
+    result = converter.convert(document_path)
 
-markdown_text = save_images_and_update_markdown(markdown_text, output_subdir)
+    markdown_text = result.document.export_to_markdown(image_mode=ImageRefMode.EMBEDDED)
 
-# 保存到本地 Markdown 文件
-with open(output_path, "w", encoding="utf-8") as f:
-    f.write(markdown_text)
 
-print(f"Markdown 已保存到：{output_path}")
-print(f"图片已保存到：{os.path.join(output_subdir, 'images')}")
+    output_basename = str(os.path.splitext(os.path.basename(document_path))[0])
+    output_subdir = os.path.join(output_dir, output_basename)
+    output_path = os.path.join(output_subdir, output_basename + ".md")
+
+    markdown_text = save_images_and_update_markdown(markdown_text, output_subdir)
+
+    # 保存到本地 Markdown 文件
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(markdown_text)
+
+    print(f"Markdown 已保存到：{output_path}")
+    print(f"图片已保存到：{os.path.join(output_subdir, 'images')}")
+
+def process_pdf_folder(converter, document_path_list, output_dir):
+    for document_path in document_path_list:
+        process_single_pdf(converter, document_path, output_dir)
+
+
+if __name__ == '__main__':
+    process_pdf_folder(converter, document_path_list, output_dir)

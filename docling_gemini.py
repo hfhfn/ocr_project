@@ -1,9 +1,9 @@
 import logging
 import os
 from pathlib import Path
-import litellm
 import threading
 import time
+import litellm
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.pipeline_options import (
     ApiVlmOptions,
@@ -171,6 +171,13 @@ def process_pdf_folder(input_folder: str, output_folder: str = "./output", model
         success_count = 0
         failed_files = []
         for i, pdf_file in enumerate(pdf_files, 1):
+            fname_base = os.path.splitext(os.path.basename(pdf_file))[0] +  "_content.md"
+            output_file = Path(os.path.join(output_path, fname_base))  # 目标输出路径
+
+            # 🔍 新增检查逻辑
+            if output_file.exists():
+                print(f"跳过已处理文件: {pdf_file} (输出目录已存在)")
+                continue  # 跳过已处理文件
             logging.info(f"\n=== 处理第 {i}/{len(pdf_files)} 个文件 ===")
             success, output_file = process_single_pdf(pdf_file, output_path, model_name)
             if success:
@@ -190,8 +197,10 @@ def process_pdf_folder(input_folder: str, output_folder: str = "./output", model
 
 def main():
     input_folder = "./input"
-    output_folder = "./output"
+    output_folder = "./output/Gemini"
     model_name = "gemini-2.5-flash-preview-05-20"
+    # model_name = "gemini-2.5-flash-preview-04-17"
+    # model_name = "gemini-2.0-flash"
     process_pdf_folder(input_folder, output_folder, model_name)
 
 if __name__ == "__main__":

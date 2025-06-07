@@ -63,6 +63,7 @@ def main():
     # 配置参数
     config = {
         "output_format": "markdown",  # 支持markdown/json/html等
+        "output_ext": "md",  # 自定义参数用来判断输出格式后缀，和output_format相匹配（包含md，html，json后缀）
         "output_dir": output_dir,
 
         # 生成版面分析结果，蓝色框表示文本行，红色框表示较大的布局块（段落、表格、图片等）
@@ -125,7 +126,7 @@ def main():
     print(f"找到 {len(pdf_files)} 个PDF文件待处理")
 
     for pdf_path in pdf_files:  # 遍历所有PDF文件
-        fname_base = os.path.splitext(os.path.basename(pdf_path))[0]
+        fname_base = os.path.splitext(os.path.basename(pdf_path))[0] + "." + converter_config.get("output_ext")
         output_path = Path(os.path.join(output_dir, fname_base))  # 目标输出路径
 
         # 🔍 新增检查逻辑
@@ -136,7 +137,7 @@ def main():
             # 执行转换
             rendered_output = converter(pdf_path)
             # 保存结果到本地
-            save_results(rendered_output, output_dir="output", fname_base=fname_base)
+            save_results(rendered_output, output_dir=output_dir, fname_base=fname_base)
             print(f"成功处理文件: {pdf_path}")
         except Exception as e:
             print(f"转换失败 {pdf_path}: {str(e)}")

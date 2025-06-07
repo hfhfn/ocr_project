@@ -1,0 +1,20 @@
+python-dotenv
+
+#docling
+litellm
+docling
+
+#MinerU
+magic-pdf[full]
+
+#marker
+glob2
+pathlib2
+json5
+marker-pdf[full]
+pdf2image  # 需要安装Windows原生库choco install poppler，依赖它渲染pdf
+Pillow
+google-generativeai
+tqdm
+streamlit
+streamlit-ace
