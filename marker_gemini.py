@@ -26,6 +26,7 @@ def save_results(rendered_output, output_dir="output", fname_base=None):
 
     # 1️⃣ 生成原始文本内容和图片字典
     raw_text, ext, images = text_from_rendered(rendered_output)
+    # print(raw_text[:100], ext, images.keys())
 
     # 2️⃣ 创建子目录并直接保存图片（同时构建路径映射）
     image_subdir.mkdir(parents=True, exist_ok=True)
@@ -58,12 +59,13 @@ def main():
     # PDF路径处理
     # pdf_path = "https://arxiv.org/pdf/2101.03961.pdf"  # url应该先请求文件，再处理
     pdf_dir = "./input"  # 支持URL或本地路径
-    output_dir = "./output"
+    output_dir = "./output/Gemini"
+    output_format_dict = {"markdown":  "md",  "json": "json", "html": "html"}
+    output_format, output_ext = list(output_format_dict.items())[0]  # 默认输出markdown格式
 
     # 配置参数
     config = {
-        "output_format": "markdown",  # 支持markdown/json/html等
-        "output_ext": "md",  # 自定义参数用来判断输出格式后缀，和output_format相匹配（包含md，html，json后缀）
+        "output_format": output_format,  # 支持markdown/json/html等
         "output_dir": output_dir,
 
         # 生成版面分析结果，蓝色框表示文本行，红色框表示较大的布局块（段落、表格、图片等）
@@ -126,8 +128,8 @@ def main():
     print(f"找到 {len(pdf_files)} 个PDF文件待处理")
 
     for pdf_path in pdf_files:  # 遍历所有PDF文件
-        fname_base = os.path.splitext(os.path.basename(pdf_path))[0] + "." + converter_config.get("output_ext")
-        output_path = Path(os.path.join(output_dir, fname_base))  # 目标输出路径
+        fname_base = os.path.splitext(os.path.basename(pdf_path))[0]
+        output_path = Path(os.path.join(output_dir, fname_base + "." + output_ext))  # 目标输出路径
 
         # 🔍 新增检查逻辑
         if output_path.exists():
