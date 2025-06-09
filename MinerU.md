@@ -15,7 +15,7 @@
   * LibreOffice（通过 `soffice` 命令使用）
 - 光学字符识别 (OCR)：
   * PaddleOCR（以及 PaddleOCR2Pytorch，用于消除直接的桨依赖）
-  * 快速OCR
+  * RapidOCR
   * 模型：`PP-OCRv4_server_rec_doc`
 - 布局分析：
   * DocLayout-YOLO
@@ -96,3 +96,86 @@
 * **要求：**
     * **CUDA：**需要安装 NVIDIA 驱动程序。
     * **NPU：**需要华为的 CANN（神经网络计算架构）工具包。
+
+
+## 模型配置与替换指南
+
+### 模型管理机制
+模型选择主要通过`magic-pdf.json`文件管理，该文件通常位于：
+- `~/magic-pdf.json`
+
+模型下载脚本运行后将自动生成/更新此文件。
+
+### 模型配置修改
+
+#### 布局分析
+```json
+"layout-config": {
+  "model": "doclayout_yolo"  // 可替换为其他兼容布局模型
+}
+```
+
+#### 文字识别(OCR)
+```json
+"ocr-config": {
+  "lang": "ch"  // 支持语言代码：ch/en/ch_server等
+}
+```
+*注：也可通过API/CLI的`lang`参数动态指定*
+
+#### 表格识别
+```json
+"table-config": {
+  "model": "rapid_table",
+  "sub_model": "slanet_plus"  // 表格结构识别子模型
+}
+```
+
+#### 公式识别
+```json
+"formula-config": {
+  "mfd_model": "yolo_v8_mfd",    // 公式检测模型
+  "mfr_model": "unimernet_small" // 公式识别模型
+}
+```
+
+### 自定义模型使用流程
+1. 获取模型文件（权重/配置文件等）
+2. 将文件放入MinerU可访问目录
+3. 修改`magic-pdf.json`中的路径指向
+
+#### 路径配置示例
+```json
+{
+  "layout-config": {
+    "model": "custom_layout",
+    "model_path": "/opt/my_models/custom_layout/" 
+  }
+}
+```
+
+#### 路径配置注意事项
+- **绝对路径**优先（如`/opt/models/`或`C:\models\`）
+- 确保运行用户有读取权限
+- 不同模型类型可能需要指向：
+  - 单个模型文件（`.onnx`, `.pt`）
+  - 或多个文件的目录
+
+### 模型替换建议
+1. 优先使用官方脚本：
+   - `download_models.py` 
+   - `download_models_hf.py`
+
+2. 选择替代模型时需考虑：
+   - 特定语言的准确率要求
+   - 性能表现（速度/资源消耗）
+   - 与MinerU的输入/输出格式兼容性
+
+*提示：可通过GitHub issues或ML模型库获取社区推荐模型*
+
+### 重要提醒
+- 模型替换可能影响：
+  - 处理速度
+  - 内存占用
+  - 识别准确率
+- 不兼容的模型会导致运行错误

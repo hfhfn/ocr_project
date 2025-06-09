@@ -15,5 +15,12 @@
 ## MinerU项目 (star: 33.9k)
 - mineru.md文件：项目技术解读。
 - mineru_default文件：输出直接嵌入图片路径的markdown文件，并输出提取的图片和debug文件（包含版面布局分析结果）。
-- 可以调用 **LLM** 进行辅助表格、文字、标题识别，默认使用qwen2.5-7b-instruct模型，可以在user目录下的magic-pdf.json文件中修改模型配置。
+- 可以调用 **LLM** 进行辅助表格、文字、标题识别，默认使用`qwen2.5-7b-instruct`模型，可以在**user目录下**的`magic-pdf.json`文件中修改模型配置。
 - mineru的版面分析效果最好，检测框框更准确。
+- ### 注意：需要用python脚本下载模型文件：(以下是从hugging face下载模型的步骤)
+  - #### Python脚本会自动下载模型文件并在配置文件（`magic-pdf.json`）中配置模型目录。
+- ```python
+    pip install huggingface_hub
+    wget https://github.com/opendatalab/MinerU/raw/master/scripts/download_models_hf.py -O download_models_hf.py
+    python download_models_hf.py
+```
