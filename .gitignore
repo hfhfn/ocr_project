@@ -100,5 +100,6 @@ temp.*
 *.log
 
 # input和output中的所有文件
-/input/*
-/output/*
+input/*
+output/*
+!input/test_file
